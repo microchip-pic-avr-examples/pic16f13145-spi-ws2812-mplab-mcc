@@ -7,7 +7,7 @@
         "version": "1.0.0",
         "displayName": "SPI to WS2812 — Use Case for CLB using the PIC16F13145 Microcontroller with MCC Melody",
         "projectName": "pic16f13145-spi-ws2812-mplab-mcc",
-        "shortDescription": "This repository provides an MPLAB® X project for interfacing the Configurable Logic Block (CLB) and Serial Peripheral Interface (SPI) peripherals with WS2812 LEDs matrix.\r\n\r\n",
+        "shortDescription": "This repository provides an MPLAB® X project for interfacing the Configurable Logic Block (CLB) and Serial Peripheral Interface (SPI) peripherals with WS2812 LEDs matrix.",
         "ide": {
             "name": "MPLAB X",
             "semverRange": ">=6.15.0"
