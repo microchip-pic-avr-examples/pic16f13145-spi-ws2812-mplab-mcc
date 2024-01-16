@@ -4,13 +4,13 @@
     "content": {
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.pic16f13145-spi-ws2812-mplab-mcc",
-        "version": " ",
-        "displayName": "",
+        "version": "1.0.0",
+        "displayName": "SPI to WS2812 — Use Case for CLB using the PIC16F13145 Microcontroller with MCC Melody",
         "projectName": "pic16f13145-spi-ws2812-mplab-mcc",
-        "shortDescription": "This repository provides an MPLAB X project for interfacing the Configurable Logic Block (CLB) and Serial Peripheral Interface (SPI) peripherals with WS2812 LEDs matrix.\r\n\r\n",
+        "shortDescription": "This repository provides an MPLAB® X project for interfacing the Configurable Logic Block (CLB) and Serial Peripheral Interface (SPI) peripherals with WS2812 LEDs matrix.\r\n\r\n",
         "ide": {
             "name": "MPLAB X",
-            "semverRange": ">=6.15.04"
+            "semverRange": ">=6.15.0"
         },
         "compiler": [
             {
@@ -19,12 +19,12 @@
             }
         ],
         "dfp": {
-            "name": "",
-            "semverRange": ""
+            "name": "PIC16F1xxx_DFP",
+            "semverRange": "^1.23.382"
         },
         "configurator": {
-            "name": "",
-            "semverRange": ""
+            "name": "MCC",
+            "semverRange": ">=5.4.1"
         },
         "device": {
             "metaDataVersion": "1.0.0",
@@ -36,9 +36,19 @@
                 "versionRange": "*"
             }
         },
-        "author": "Prasad Aradhya",
-        "peripherals": [],
-        "keywords": [],
+        "author": "Petre Teodor-Emilian",
+        "peripherals": [
+			"CLB",
+			"SPI",
+			"GPIO",
+            "NVMCTRL",
+            "CRC"
+		],
+        "keywords": [
+			"Melody",
+			"CLB",
+			"WS2812/11"
+		],
         "additionalData": {
             "longDescription": {
                 "metaDataVersion": "1.0.0",
