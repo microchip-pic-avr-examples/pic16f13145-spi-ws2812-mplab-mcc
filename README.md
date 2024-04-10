@@ -6,7 +6,7 @@
 
 This repository provides an MPLAB® X project for interfacing the Configurable Logic Block (CLB) and Serial Peripheral Interface (SPI) peripherals with a WS2812 LED matrix.
 
-The CLB peripheral is a collection of logic elements that can be programmed to perform a wide variety of digital logic functions. The logic function may be completely combinatorial, sequential, or a combination of the two, enabling users to incorporate hardware-based custom logic into their applications.
+The CLB peripheral is a collection of logic elements that can be programmed to perform a wide variety of digital logic functions. The logic function may be completely combinatorial, sequential or a combination of the two, enabling users to incorporate hardware-based custom logic into their applications.
 
 ## Related Documentation
 
@@ -15,7 +15,7 @@ More details and code examples on the PIC16F13145 can be found at the following 
 - [PIC16F13145 Product Page](https://www.microchip.com/en-us/product/PIC16F13145?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-spi-ws2812-mplab-mcc&utm_bu=MCU08)
 - [PIC16F13145 Code Examples on Discover](https://mplab-discover.microchip.com/v2?dsl=PIC16F13145)
 - [PIC16F13145 Code Examples on GitHub](https://github.com/microchip-pic-avr-examples/?q=PIC16F13145)
-- [WS2818 Datasheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf)
+- [WS2818 Data Sheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf)
 
 ## Software Used
 
@@ -49,29 +49,29 @@ The `MSSP1_SDO`, `CLBSWIN0` and `MSSP1_SCK` pins are configured as input pins fo
 
 <br><img src="images/mcc_clb_demux_1x2.png" width="800">
 
-If the CLBSWIN0 bit is set, the SPI signals will be routed to the `SPI_to_WS2812` circuit, that is shown in the capture below, composed of a D Latch, a 3-bit counter with reset and one LUT. The output value of the 4-bit LUT is `0x7E0E`, used to manage the specific timings for the WS2812 LED matrix, that can be found on its own [datasheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf). The first 3 inputs of the LUT (A, B, C) are the outputs of the 3-bit counter, while the 4th input of the LUT is used to choose the right pattern for the matrix, so there are 2 sets of 8 bits. In the green box the D value is 0, meaning the “0 code” is chosen and is described by 3 periods high and 5 periods low, and the “1 code” is described by 6 periods high and 2 periods low. Those periods represent the right timings mentioned in the datasheet to power up the LEDs in the desired pattern.
+If the CLBSWIN0 bit is set, the SPI signals will be routed to the `SPI_to_WS2812` circuit, that is shown in the capture below, composed of a D Latch, a 3-bit counter with reset and one LUT. The output value of the 4-bit Look-Up Table (LUT) is `0x7E0E`, used to manage the specific timings for the WS2812 LED matrix, that can be found on its own [data sheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf). The first three inputs of the LUT (A, B, C) are the outputs of the 3-bit counter, while the fourth input of the LUT is used to choose the right pattern for the matrix, so there are two sets of eight bits. In the green box the D value is `0`, meaning the "0 code" is chosen and described by three high periods and five low periods, and the "1 code" is described by six periods high and two periods low.. Those periods represent the right timings mentioned in the datasheet to power up the LEDs in the desired pattern.
 
 <br><img src="images/mcc_clb_spi_to_ws2812.png" width="800">
 
-To power-up an LED, a "1 code" signal, a Pulse-Width Modulation (PWM) signal with 0.7μs±150ns high and 0.6μs±150ns low periods must be transmitted. To power-off, a "0 code" signal, a PWM signal with 0.35μs±150ns high and 0.8μs±150ns low periods, will be transmitted. For this example, the "1 code" signal is described by six high signal cycles, `1` logic, and two low signal cycles, `0` logic, and the "0 code" is composed of three high signal cycles and seven low signal cycles. Each transmitted byte describes ten cycles. The D Latch with Enable is used as the fourth input of the LUT to select the needed sequence chart for the WS2812, if the bit from the SDO signal is `0` or `1`. For a better understanding of the above information, the diagram below presents the sequence charts and timings.
+To power up an LED, a "1 code" signal must be transmitted, meaning a Pulse-Width Modulation (PWM) signal with 0.7 μs ± 150 ns high and 0.6 μs ± 150 ns low periods. To power-off, a "0 code" signal will be transmitted, meaning a PWM signal with 0.35 μs ± 150 ns high and 0.8 μs ± 150 ns low periods. For this example, the "1 code" signal is described by six high signal cycles, `1` logic, and two low signal cycles, `0` logic, and the "0 code" is composed of three high signal cycles and seven low signal cycles. Each transmitted byte describes ten cycles. The D Latch with Enable is used as the fourth input of the LUT to select the needed sequence chart for the WS2812, if the bit from the SDO signal is `0` or `1`. For a better understanding of the above information, the diagram below presents the sequence charts and timings.
 
 <br><img src="images/sequence-timings.png" width="800">
 
-This 3-bit counter with reset is used to count up to 8 values that describe each of the GRB pattern colors. Inverted SPI clock pulses reset the counter. The counter is enabled when all the outputs are high by an 3-AND gate, so the counter is kept in reset state until a next pulse is coming. In this configuration, the counter will work only when an enable pulse is met and stops and resets when the last value, 7, appears. The output values represent the input of the next LUT necessary for setting the 0 and 1 codes. The figure below presents all the gates and pins needed to simulate the hardware counter.
+This 3-bit counter with reset is used to count up to eight values that describe each of the GRB pattern colors. Inverted SPI clock pulses reset the counter. The counter is enabled when all the outputs are high by a 3-AND gate, so the counter is kept in Reset state until the next pulse is coming. In this configuration, the counter works only when an enable pulse is met and stops and resets when the last value, 7, appears. The output values represent the input of the next LUT necessary for setting the "0 code" and "1 code". The figure below presents all the gates and pins needed to simulate the hardware counter.
 
 <br><img src="images/mcc_clb_counter_3bit_reset.png" width="800">
 
-One necessary period for the WS2812 0/1 code is approximately 1.25 μs, and depends from a manufacturer to another. To have the desired period output, set the System Clock to 32 MHz, the CLB clock as the System Clock divided by four, and the SPI clock is set to 800 kHz. This setting will let the entire CLB circuit generate an output of the good timings for WS2812 LED matrix. For other types of neopixels, the specified clock values must be changed manually to get the desired ones.
+One necessary period for the WS2812 "0/1 code" is approximately 1.25 μs, and depends from a manufacturer to another. To have the desired period output, set the System Clock to 32 MHz, the CLB clock as the System Clock divided by four, and the SPI clock to 800 kHz. These settings will let the entire CLB circuit generate an output of the good timings for the WS2812 LED matrix. For other types of neopixels, the specified clock values must be changed manually to get the desired timings.
 
 For a better understanding of the circuit, debugging output pins are used and read with a logic analyzer to display the digital signals.
 
 <br><img src="images/logic_signals.PNG" width="1000">
 
-When the CLBSWIN0 is 0, the SDO and SCK signals from the demux circuits are displayed.
+When the CLBSWIN0 is `0`, the SDO and SCK signals from the demux circuits are displayed.
 
 <br><img src="images/logic_swin_0_spi_pattern.png" width="1000">
 
-When the CLBSWIN1 is set, the SPI_to_WS2812 output that is connected next to the WS2812 matrix is displayed. First three pairs of timing markers, P0 - T0H cycle, P1 - T0L cycle, and P2, the joining between P0 and P1, represent the "0 Code" sequence chart. The next three pairs of timing markers, P3 - T1H cycle, P4 - T1L cycle, and P5, the joining between P3 and P4, represent the "1 Code" sequence chart.
+When the CLBSWIN1 is set, the SPI_to_WS2812 output that is connected next to the WS2812 matrix is displayed. The "0 code" sequence chart is made out of the first three pairs of timing markers: P0-T0H cycle, P1-T0L cycle and P2 (the joining between P0 and P1). The next three pairs of timing markers, P3-T1H cycle, P4-T1L cycle and P5 (the joining between P3 and P4), represent the "1 code" sequence chart.
 
 <br><img src="images/logic_swin_1_ws2812_pattern.png" width="1000">
 
@@ -83,7 +83,7 @@ The following peripheral and clock configurations are set up using the MPLAB Cod
 
    - CONFIG1:
      - External Oscillator mode selection bits: Oscillator not enabled
-     - Power-up default value for COSC bits: HFINTOSC (1MHz)
+     - Power-up default value for COSC bits: HFINTOSC (1 MHz)
        <br><img src="images/mcc_config_bits_1.png" width="400">
    - CONFIG2:
      - Brown-out reset enable bits: Brown-out reset disabled
@@ -135,7 +135,7 @@ The following peripheral and clock configurations are set up using the MPLAB Cod
 
 ## Demo
 
-Two patterns are saved in the `image.h` header file called `imageR` and `imageG` variables. Those variables contain **CLB** text in two different colors, red and green, as shown in the demo below. Only two wires are needed between the microcontroller and the WS2812 - the output pin from the CLB (RB7) and the ground (GND).
+Two patterns are saved in the `image.h` header file called `imageR` and `imageG` variables. Those variables help display **CLB** acronym in two different colors, red and green, as shown in the demo below. Only two wires are needed between the microcontroller and the WS2812 - the output pin from the CLB (RB7) and the ground (GND).
 
 <br><img src="images/demo.gif" width="1000">
 
@@ -145,7 +145,7 @@ Two patterns are saved in the `image.h` header file called `imageR` and `imageG`
 
 ## Summary
 
-This example demonstrates the capabilities of the CLB, a CIP, that controls and manipulates the transmitted data through the SPI to power-up a WS2812 matrix in a desired pattern.
+This example demonstrates the capabilities of the CLB, a CIP, that controls and manipulates the transmitted data through the SPI to power up a WS2812 matrix in a desired pattern.
 
 <br>
 
@@ -155,14 +155,14 @@ This chapter demonstrates how to use the MPLAB X IDE to program a PIC® device w
 
 1.  Connect the board to the PC.
 
-2.  Open the Example_Project.X project in MPLAB X IDE.
+2.  Open the `Example_Project.X` project in MPLAB X IDE.
 
-3.  Set the Example_Project.X project as main project.
+3.  Set the `Example_Project.X` project as main project.
     <br>Right click the project in the **Projects** tab and click **Set as Main Project**.
     <br><img src="images/Program_Set_as_Main_Project.png" width="600">
 
-4.  Clean and build the Example_Project.X project.
-    <br>Right click the **Example_Project.X** project and select **Clean and Build**.
+4.  Clean and build the `Example_Project.X` project.
+    <br>Right click the `Example_Project.X` project and select **Clean and Build**.
     <br><img src="images/Program_Clean_and_Build.png" width="600">
 
 5.  Select **PICxxxxx Curiosity Nano** in the Connected Hardware Tool section of the project settings:
